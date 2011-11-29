@@ -22,27 +22,27 @@ wekaMine -c cfg/vijver2002.cfg -d data/vijver2002.tab -i data/vijver2002.clinica
 # To create a model from one of the results in the output, you can simply put that result line(s)
 # in a file and do:
 
-wekaMineSaveModel -d data/vijver2002.tab -i data/vijver2002.clinical.tab -o models/testmodel -R results.csv
+wmSaveModel -d data/vijver2002.tab -i data/vijver2002.clinical.tab -o models/testmodel -R results.csv
 
 
 # *** OR ***  you can put the result line (or just the first 6 columns) on the command line like:
 # (note single quotes, which are needed because description has options within it):
 
-wekaMineSaveModel -d data/vijver2002.tab -i data/vijver2002.clinical.tab -o models/testmodel \
+wmSaveModel -d data/vijver2002.tab -i data/vijver2002.clinical.tab -o models/testmodel \
 -E 'weka.attributeSelection.GainRatioAttributeEval,weka.attributeSelection.Ranker,100,weka.classifiers.functions.SMO -M -C 3.0 -L 0.0001 -P 1.0E-12 -N 0 -V -1 -W 1 -K "weka.classifiers.functions.supportVector.PolyKernel -C 250007 -E 1",TIMEsurvival,median'
  
 # Finally, to classify a dataset based on this saved model, do (here trivially classifying the 
 # training data):
 
-wekaMineClassify -m models/testmodel.0.wmm -d data/vijver2002.tab -o results/classifications.txt
+wmClassify -m models/testmodel.0.wmm -d data/vijver2002.tab -o results/classifications.txt
 
 # If you want to compare these classifications with some known values, simply pass the known values
 # in a clinical tab data format and it'll output predictions, how it compares with actual, and some
 # statistics (again, in this example trivially classifying training input, but could be anything):
 
-wekaMineClassify -m models/testmodel.0.wmm -d data/vijver2002.tab -i data/vijver2002.clinical.tab -o results/comparisons.txt
+wmClassify -m models/testmodel.0.wmm -d data/vijver2002.tab -i data/vijver2002.clinical.tab -o results/comparisons.txt
 
 # You can perform stand-alone attribute selection on a data and meta-data file using wekaMineAttributeSelection by 
 # specifying the attribute same 6 field description of the attribute selection algorithm like this:
 
-wekaMineAttributeSelection -d data/vijver2002.tab -i data/vijver2002.clinical.tab -o vijver.gainratio.tab -E 'weka.attributeSelection.GainRatioAttributeEval,weka.attributeSelection.Ranker,100,none,TIMEsurvival,2;2.1' 
+wmAttributeSelection -d data/vijver2002.tab -i data/vijver2002.clinical.tab -o vijver.gainratio.tab -E 'weka.attributeSelection.GainRatioAttributeEval,weka.attributeSelection.Ranker,100,none,TIMEsurvival,2;2.1' 
