@@ -1,4 +1,10 @@
-# Just to make sure you have the required tools in your path, do:
+# Documentation can be found here:
+#
+# https://github.com/jdurbin/wekaMine/wiki
+#
+
+# Make sure you have the required tools in your path.  These are Java, Groovy, and Ant. 
+# On UCSC CBSE machines you can do this to pick up these tools:
 source /inside/home/common/jvmtools.sh
 
 # ============ INSTALLATION ===============
@@ -17,32 +23,38 @@ export PATH=$PATH:src/wekaMine/
 # Run a set of experiments, trying out a couple of classifiers and 
 # a couple of feature selection cutoffs...
 
-wekaMine -c cfg/vijver2002.cfg -d data/vijver2002.tab -i data/vijver2002.clinical.tab -o results/test
+	wekaMine -c cfg/vijver2002.cfg -d data/vijver2002.tab -i data/vijver2002.clinical.tab -o results/test
 
-# To create a model from one of the results in the output, you can simply put that result line(s)
-# in a file and do:
+# To create a model from the best result from the experiments first extract the top result:
 
-wmSaveModel -d data/vijver2002.tab -i data/vijver2002.clinical.tab -o models/testmodel -R results.csv
+	wmBestModels -R results/test-1.0.summary.csv > results/best.csv
 
+# Then build a model using this result:
 
-# *** OR ***  you can put the result line (or just the first 6 columns) on the command line like:
-# (note single quotes, which are needed because description has options within it):
-
-wmSaveModel -d data/vijver2002.tab -i data/vijver2002.clinical.tab -o models/testmodel \
--E 'weka.attributeSelection.GainRatioAttributeEval,weka.attributeSelection.Ranker,100,weka.classifiers.functions.SMO -M -C 3.0 -L 0.0001 -P 1.0E-12 -N 0 -V -1 -W 1 -K "weka.classifiers.functions.supportVector.PolyKernel -C 250007 -E 1",TIMEsurvival,median'
+	wmSaveModel -o models/test -d data/vijver2002.tab -i data/vijver2002.clinical.tab -R results/best.csv 
  
 # Finally, to classify a dataset based on this saved model, do (here trivially classifying the 
 # training data):
 
-wmClassify -m models/testmodel.0.wmm -d data/vijver2002.tab -o results/classifications.txt
+	wmClassify -m models/test_0.wmm -d data/vijver2002.tab -o results/classifications.txt
 
 # If you want to compare these classifications with some known values, simply pass the known values
 # in a clinical tab data format and it'll output predictions, how it compares with actual, and some
 # statistics (again, in this example trivially classifying training input, but could be anything):
 
-wmClassify -m models/testmodel.0.wmm -d data/vijver2002.tab -i data/vijver2002.clinical.tab -o results/comparisons.txt
+	wmClassify -m models/test_0.wmm -i data/vijver2002.clinical.tab -d data/vijver2002.tab -o results/classifications_compare.txt
+	
+# You can perform stand-alone attribute selection on a data and meta-data file using 
+# wmAttributeSelection by specifying the attribute selection method with the first seven fields 
+# as seen in the results file, putting in 'none' for the classifier.  wmAttributeSelection outputs
+# a new datafile with only the selected attributes in it. 
 
-# You can perform stand-alone attribute selection on a data and meta-data file using wekaMineAttributeSelection by 
-# specifying the attribute same 6 field description of the attribute selection algorithm like this:
+	wmAttributeSelection -d data/vijver2002.tab -i data/vijver2002.clinical.tab -o vijver.gainratio.tab -E 'none,weka.attributeSelection.GainRatioAttributeEval,weka.attributeSelection.Ranker,100,none,TIMEsurvival,2;2.1'
+	
+# You may want to merely see the ranking of attributes that results from some attribute ranking 
+# method, like information gain.  This can be done with wmAttributeRank:
 
-wmAttributeSelection -d data/vijver2002.tab -i data/vijver2002.clinical.tab -o vijver.gainratio.tab -E 'weka.attributeSelection.GainRatioAttributeEval,weka.attributeSelection.Ranker,100,none,TIMEsurvival,2;2.1' 
+	wmAttributeRank -d data/vijver2002.tab -i data/vijver2002.clinical.tab -E 'none,weka.attributeSelection.GainRatioAttributeEval,weka.attributeSelection.Ranker,100,none,TIMEsurvival,2;2.1'
+
+# There are a number of other scripts in wekaMine.  Each has 
+	
