@@ -3,27 +3,51 @@
 # https://github.com/jdurbin/wekaMine/wiki
 #
 
+============ PRE INSTALLED ON SOME MACHINES ===============
+# wekaMine is pre-installed on certain UCSC CBSE/SOE machines.  
+# On soe machines bop, tap, etc., you can add the right path and 
+# other environment variables by doing:
+
+source /projects/sysbio/apps/wekamine_env.sh
+
+# On hgwdev, ku, etc., you can pick up these variables by doing:
+
+source /cluster/bin/wekamine_env.sh 
+
 # Make sure you have the required tools in your path.  These are Java, Groovy, and Ant. 
-# On UCSC CBSE machines you can do this to pick up these tools:
-source /inside/home/common/jvmtools.sh
+# On hgwdev,ku, etc., you can pick these up with:
+
+source /cluster/bin/jvmtools.sh 
+
+On bop,tap, etc. java, groovy, and ant should already be in your path. 
 
 # ============ INSTALLATION ===============
+# If you need to install wekaMine somewhere it is not pre-installed follow these instructions. 
+# The prerequisites for wekaMine are Java, Groovy, and Ant, which can be downloaded and installed
+# however you like. 
+
 # Somewhere, doesn't matter where, do:
 git clone git://github.com/jdurbin/durbinlib.git
 cd durbinlib
 ant install
+export PATH=$PATH:{pathtodurbinlib}/durbinlib/scripts
+export CLASSPATH = "{pathtodurbinlib}/target/jar/*"
+
+# Note that the scripts directory adds a number of useful non-wekaMine scripts, such as 
+# csvsql, viewtab, cutbyname, etc. 
+
 
 # Somewhere, doesn't matter where, do:
-mkdir src
-cd src
 git clone git://github.com/jdurbin/wekaMine.git
-export PATH=$PATH:src/wekaMine/
+export PATH=$PATH:{pathtowekaMine}/wekaMine/
 
+
+#==============   GETTING STARTED ===============
 
 # Run a set of experiments, trying out a couple of classifiers and 
 # a couple of feature selection cutoffs...
 
-	wekaMine -c cfg/vijver2002.cfg -d data/vijver2002.tab -i data/vijver2002.clinical.tab -o results/test
+	wmModelSelection -c cfg/vijver2002.cfg -d data/vijver2002.tab -i data/vijver2002.clinical.tab -o results/test
 
 # To create a model from the best result from the experiments first extract the top result:
 
@@ -36,7 +60,7 @@ export PATH=$PATH:src/wekaMine/
 # Finally, to classify a dataset based on this saved model, do (here trivially classifying the 
 # training data):
 
-	wmClassify -m models/test_0.wmm -d data/vijver2002.tab -o results/classifications.txt
+	wmClassify -m models/test_0.wmm -d data/vijver2002.tab -o results/classifications.tab
 
 # If you want to compare these classifications with some known values, simply pass the known values
 # in a clinical tab data format and it'll output predictions, how it compares with actual, and some
@@ -56,5 +80,12 @@ export PATH=$PATH:src/wekaMine/
 
 	wmAttributeRank -d data/vijver2002.tab -i data/vijver2002.clinical.tab -E 'none,weka.attributeSelection.GainRatioAttributeEval,weka.attributeSelection.Ranker,100,none,TIMEsurvival,2;2.1'
 
-# There are a number of other scripts in wekaMine.  Each has 
+
+# These steps are encapsulated in a makefile in this directory.  Simply do:
+
+make test
+
+
+
+# There are a number of other scripts in wekaMine. Each has help that can be invoked with -h
 	
