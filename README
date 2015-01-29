@@ -36,10 +36,16 @@ export CLASSPATH = "{pathtodurbinlib}/target/jar/*"
 # Note that the scripts directory adds a number of useful non-wekaMine scripts, such as 
 # csvsql, viewtab, cutbyname, etc. 
 
-
 # Somewhere, doesn't matter where, do:
 git clone git://github.com/jdurbin/wekaMine.git
 export PATH=$PATH:{pathtowekaMine}/wekaMine/
+
+# The following environment variable is not strictly necessary, but it is 
+# useful to give the JDK all the ram it might need.  Also, -server improves 
+# performance for long-running jobs by doing more JIT compilation at a very small 
+# cost to start-up time.  Almost everything I do is long running (> 30 seconds) so 
+# this is a good tradeoff. 
+export JAVA_OPTS="-Xmx5000m -server"
 
 
 #==============   GETTING STARTED ===============
